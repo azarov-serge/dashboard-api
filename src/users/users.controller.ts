@@ -4,23 +4,28 @@ import { BaseController } from '../common/base.controller';
 import { HTTPError } from '../errors/http-error.class';
 import { ILoggerSevice } from '../logger/logger.interface';
 import { TYPES } from '../types';
-import { IUserController } from './user.controller.interface';
-import { IUserService } from './user.service.interface';
+import { IUsersController } from './users.controller.interface';
+import { IUsersService } from './users.service.interface';
 import 'reflect-metadata';
 import { UserLoginDto } from './dto/user-login.dto';
 import { UserRegisterDto } from './dto/user-register.dto';
 import { ValidateMiddleware } from './validate.middleware';
 
 @injectable()
-export class UserController extends BaseController implements IUserController {
+export class UsersController extends BaseController implements IUsersController {
 	constructor(
 		@inject(TYPES.ILoggerSevice) private loggerService: ILoggerSevice,
-		@inject(TYPES.UserService) private userService: IUserService,
+		@inject(TYPES.UsersService) private usersService: IUsersService,
 	) {
 		super(loggerService, 'users');
 
 		this.bindRoutes([
-			{ path: '/login', method: 'post', func: this.login },
+			{
+				path: '/login',
+				method: 'post',
+				func: this.login,
+				middlewares: [new ValidateMiddleware(UserLoginDto)],
+			},
 			{
 				path: '/register',
 				method: 'post',
@@ -30,9 +35,18 @@ export class UserController extends BaseController implements IUserController {
 		]);
 	}
 
-	login(req: Request<{}, {}, UserLoginDto>, res: Response, next: NextFunction): void {
-		console.log(req.body);
-		next(new HTTPError(401, 'Error auth', 'login'));
+	async login(
+		req: Request<{}, {}, UserLoginDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const result = await this.usersService.validateUser(req.body);
+
+		if (!result) {
+			return next(new HTTPError(401, 'Error auth', 'login'));
+		}
+
+		this.ok(res, {});
 	}
 
 	async register(
@@ -40,12 +54,12 @@ export class UserController extends BaseController implements IUserController {
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
-		const result = await this.userService.createUser(req.body);
+		const result = await this.usersService.createUser(req.body);
 
 		if (!result) {
-			return next(new HTTPError(422, 'User exists'));
+			return next(new HTTPError(422, 'User exists', 'users'));
 		}
 
-		this.ok(res, { email: result.email });
+		this.ok(res, { email: result.email, id: result.id });
 	}
 }
