@@ -1,11 +1,14 @@
 import { Router, Response } from 'express';
-import { LoggerSevice } from '../logger/logger.service';
+import { injectable } from 'inversify';
+import { ILoggerSevice } from '../logger/logger.interface';
 import { IRouteController } from './route.interface';
+import 'reflect-metadata';
 
+@injectable()
 export abstract class BaseController {
 	private readonly _router: Router;
 
-	constructor(private logger: LoggerSevice) {
+	constructor(private logger: ILoggerSevice) {
 		this._router = Router();
 	}
 
@@ -13,18 +16,18 @@ export abstract class BaseController {
 		return this._router;
 	}
 
-    public send<T>(res: Response, code: number, message: T) {
-        res.type('application/json');
-        return res.status(code).json(message);
-    }
+	public send<T>(res: Response, code: number, message: T) {
+		res.type('application/json');
+		return res.status(code).json(message);
+	}
 
-    public ok<T>(res: Response, message: T) {
-        return this.send(res, 200, message);
-    }
+	public ok<T>(res: Response, message: T) {
+		return this.send(res, 200, message);
+	}
 
-    public created(res: Response) {
-        return res.sendStatus(201)
-    }
+	public created(res: Response) {
+		return res.sendStatus(201);
+	}
 
 	protected bindRoutes(routes: IRouteController[]) {
 		for (const route of routes) {
