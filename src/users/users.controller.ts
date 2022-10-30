@@ -15,7 +15,6 @@ export class UsersController extends BaseController {
 
 	login(req: Request, res: Response, next: NextFunction) {
 		next(new HTTPError(401, 'Error auth', 'login'));
-		
 	}
 
 	register(req: Request, res: Response, next: NextFunction) {

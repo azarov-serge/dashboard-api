@@ -13,18 +13,18 @@ export abstract class BaseController {
 		return this._router;
 	}
 
-    public send<T>(res: Response, code: number, message: T) {
-        res.type('application/json');
-        return res.status(code).json(message);
-    }
+	public send<T>(res: Response, code: number, message: T) {
+		res.type('application/json');
+		return res.status(code).json(message);
+	}
 
-    public ok<T>(res: Response, message: T) {
-        return this.send(res, 200, message);
-    }
+	public ok<T>(res: Response, message: T) {
+		return this.send(res, 200, message);
+	}
 
-    public created(res: Response) {
-        return res.sendStatus(201)
-    }
+	public created(res: Response) {
+		return res.sendStatus(201);
+	}
 
 	protected bindRoutes(routes: IRouteController[]) {
 		for (const route of routes) {
