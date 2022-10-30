@@ -16,21 +16,21 @@ export class App {
 	constructor(
 		@inject(TYPES.ILoggerSevice) private logger: ILoggerSevice,
 		@inject(TYPES.IExeptionFilter) private exeptionFilter: IExeptionFilter,
-		@inject(TYPES.UsersController) private usersController: UsersController
+		@inject(TYPES.UsersController) private usersController: UsersController,
 	) {
 		this.app = express();
 		this.port = 8000;
 	}
 
-	useRoutes() {
+	useRoutes(): void {
 		this.app.use('/users', this.usersController.router);
 	}
 
-	useExeptionFilters() {
+	useExeptionFilters(): void {
 		this.app.use(this.exeptionFilter.catch.bind(this));
 	}
 
-	public async init() {
+	public async init(): Promise<void> {
 		this.useRoutes();
 		this.useExeptionFilters();
 
