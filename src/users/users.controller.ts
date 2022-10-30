@@ -8,13 +8,8 @@ import { IUsersController } from './users.controller.interface';
 import 'reflect-metadata';
 
 @injectable()
-export class UsersController
-	extends BaseController
-	implements IUsersController
-{
-	constructor(
-		@inject(TYPES.ILoggerSevice) private loggerService: ILoggerSevice
-	) {
+export class UsersController extends BaseController implements IUsersController {
+	constructor(@inject(TYPES.ILoggerSevice) private loggerService: ILoggerSevice) {
 		super(loggerService);
 
 		this.bindRoutes([
@@ -23,11 +18,11 @@ export class UsersController
 		]);
 	}
 
-	login(req: Request, res: Response, next: NextFunction) {
+	login(req: Request, res: Response, next: NextFunction): void {
 		next(new HTTPError(401, 'Error auth', 'login'));
 	}
 
-	register(req: Request, res: Response, next: NextFunction) {
+	register(req: Request, res: Response, next: NextFunction): void {
 		this.ok(res, 'register');
 	}
 }
