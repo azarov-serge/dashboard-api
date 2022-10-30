@@ -8,7 +8,7 @@ import 'reflect-metadata';
 export abstract class BaseController {
 	private readonly _router: Router;
 
-	constructor(private logger: ILoggerSevice) {
+	constructor(private logger: ILoggerSevice, protected context: string) {
 		this._router = Router();
 	}
 
@@ -31,9 +31,12 @@ export abstract class BaseController {
 
 	protected bindRoutes(routes: IRouteController[]): void {
 		for (const route of routes) {
-			this.logger.log(`[${route.method}] ${route.path}`);
+			this.logger.log(`[${this.context}/${route.method}] ${route.path}`);
+			const middlewares = route.middlewares?.map((item) => item.execute.bind(item));
 			const handler = route.func.bind(this);
-			this.router[route.method](route.path, handler);
+			const pipeline = middlewares ? [...middlewares, handler] : handler;
+
+			this.router[route.method](route.path, pipeline);
 		}
 	}
 }
