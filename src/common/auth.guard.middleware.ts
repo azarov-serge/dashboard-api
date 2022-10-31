@@ -5,7 +5,7 @@ import { IMiddleware } from './middleware.interface';
 
 export class AuthGuardMiddleware implements IMiddleware {
 	execute(req: Request, res: Response, next: NextFunction): void {
-		if (req.headers.authorization) {
+		if (req.email) {
 			return next();
 		}
 

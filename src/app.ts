@@ -32,7 +32,7 @@ export class App {
 		this.app.use(json());
 
 		const authMiddleware = new AuthMiddleware(this.configService.get('SECRET'));
-		this.app.use(authMiddleware.execute.bind(authMiddleware))
+		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 
 	useRoutes(): void {
@@ -52,5 +52,9 @@ export class App {
 
 		this.server = this.app.listen(this.port);
 		this.logger.log(`Start server http://localhost:${this.port}`);
+	}
+
+	public close(): void {
+		this.server?.close();
 	}
 }
