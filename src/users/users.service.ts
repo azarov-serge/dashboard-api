@@ -29,7 +29,6 @@ export class UsersService implements IUsersService {
 
 	async validateUser(dto: UserLoginDto): Promise<boolean> {
 		const existedUser = await this.usersRepository.find(dto.email);
-		console.log('+++ existedUser', existedUser)
 		if (!existedUser) {
 			return false;
 		}
@@ -37,5 +36,9 @@ export class UsersService implements IUsersService {
 		const newUser = new User(existedUser.email, existedUser.name, existedUser.password);
 
 		return newUser.comparePassword(dto.password);
+	}
+
+	async getUserInfo(email: string): Promise<UserModel | null> {
+		return await this.usersRepository.find(email);
 	}
 }
